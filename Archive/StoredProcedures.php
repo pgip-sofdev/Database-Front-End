@@ -89,15 +89,13 @@
 		public function getInterns()
 		{
 			$rows = array();
-			//$Sql = 'CALL sp_Personnel()';
-			$Sql = "SELECT * From vw_personnel";
+			$Sql = 'CALL sp_InternTest()';			
 			$stmt = $this->con->prepare($Sql);
 			$stmt->execute();
 			$result = $stmt->get_result();		
 			
 			while ($row = $result->fetch_assoc())
 			{
-				$row_array["ID"] = $row["ID"];
 				$row_array["firstname"] = $row["firstname"];
 				$row_array["lastname"] = $row["lastname"];
 				$row_array["department_name"] = $row["department_name"];
