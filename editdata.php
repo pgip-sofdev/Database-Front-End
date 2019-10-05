@@ -4,22 +4,19 @@
  */
 // start again
 
-//require ('StoredProcedures.php');
-require ('DropDowns.php');
+//Setup Connection
+require ('Functions.php');
 $con; 
 require_once dirname(__FILE__).'/DbConnect.php';
 $db = new DbConnect();
 $con = $db->connect();
 
 
-
-//$con=mysqli_connect('localhost','root','','interndb1');  // this one in error
-
 if(isset($_REQUEST['id'])){
     $id=intval($_REQUEST['id']);
     if($id=="0")
     {
-        $per_id="New Record";
+        $per_id="New Member";
         $per_firstname="";
         $per_lastname="";
         $per_department="";
@@ -31,7 +28,7 @@ if(isset($_REQUEST['id'])){
         $per_startdate="";
         $per_enddate="";
 
-        $form_Type = "Add New Person";
+        $form_Type = "Add New Member";
     }
     else
     {
@@ -58,10 +55,12 @@ if(isset($_REQUEST['id'])){
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+    <!--Builds Form Fields-->
     <form class="form-horizontal" method="post">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal" onclick="close_click()">&times;</button>
                 <h4 class="modal-title"><?php echo $form_Type ?></h4>
             </div>
             <div class="modal-body">
@@ -138,7 +137,13 @@ if(isset($_REQUEST['id'])){
                             <div class="col-sm-6">
                                 <input type="text" class="form-control" id="txtendDate" name="txtendDate" value="<?php echo $per_enddate;?>" readonly>
                             </div>
-                        </div>							
+                        </div>
+                        <div class="form-group">                            
+                            <div class="col-sm-6">                            
+                                <button type="button" class="form-control" id="btnsubmit" name="btnsubmit" onclick="submit_click()">Submit</button>
+                            </div>
+                        </div>	
+
                     </div>
                 </form>
             </div>
@@ -148,8 +153,9 @@ if(isset($_REQUEST['id'])){
 <script type="text/javascript" >
 function OnSelectionChange(strvalue)
 {
+    //Called when track is changed. Fetch start and end dates.
     $.ajax({
-    url: 'DropDowns.php',
+    url: 'Functions.php',
     type: 'post',
     data: { "getStartDate": strvalue},
     success: function(response) 
@@ -159,7 +165,7 @@ function OnSelectionChange(strvalue)
     });
 
     $.ajax({
-    url: 'DropDowns.php',
+    url: 'Functions.php',
     type: 'post',
     data: { "getEndDate": strvalue},
     success: function(response) 
@@ -167,10 +173,111 @@ function OnSelectionChange(strvalue)
         document.getElementById("txtendDate").value = response; 
     }
     });
-
-
 }
 </script>
+
+<script>type="text/javascript"
+//either adds or edits a user based on if an ID was passed in.
+function submit_click(){    
+    if(document.getElementById("txtid").value == "New Member")
+    {
+        var personnelID=0;
+    }
+    else
+    {
+        var personnelID = document.getElementById("txtid").value;
+    }
+
+    if(personnelID==0)
+        {
+            var message = "Are you sure you want to add this member?";
+            var alertMessage = "Member add successful.";
+        } 
+        else
+        {
+            var message = "Are you sure you want to edit this member?";
+            var alertMessage = "Member update successful.";
+        }
+    
+    if(confirm(message))
+    {
+
+    var firstname = document.getElementById("txtfirstname").value;
+    var lastname = document.getElementById("txtlastname").value;
+    var department = document.getElementById("txtdepartment").value;
+    var role = document.getElementById("txtrole").value;
+    var track = document.getElementById("txttrack").value;
+    var personalEmail = document.getElementById("txtpersonalEmail").value;
+    var purdueglobalEmail = document.getElementById("txtPurdueGlobalEmail").value;
+    var pgiptechEmail = document.getElementById("txtPGIPEmail").value;
+
+    if(firstname === "")
+    {
+        alert("You must enter a first name.");
+        return false;
+    }
+    else if(lastname === "")
+    {
+        alert("You must enter a last name.");
+        return false;
+    }
+    else{}
+
+
+    //Calls Function PHP InsertUpdatePersonnel function
+    $.ajax({
+    url: 'Functions.php',
+    type: 'post',
+    data: { "InsertUpdate": 1,
+            "personnelID": personnelID,
+            "firstname": firstname,
+            "lastname": lastname,
+            "department": department,
+            "role": role,
+            "track":track,
+            "personalEmail":personalEmail,
+            "purdueglobalEmail": purdueglobalEmail,
+            "pgiptechEmail": pgiptechEmail    
+            },
+
+
+    success: function(response) 
+    { 
+        
+        if(response == 1){
+            alert(alertMessage);
+        }
+        else{
+            alert("An error as occured.");
+        }
+        
+    }
+    });    
+    }
+    else
+    {
+        return false;
+    }    
+
+}
+
+
+
+</script>
+
+<script>
+    function close_click()
+{
+   //Reload Page 
+   location.reload();
+
+}
+    </script>
+
+
+
+
+
 <?php
 }//end if ?>
 

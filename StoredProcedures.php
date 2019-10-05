@@ -34,8 +34,8 @@
 		public function getRoles()
 		{
 			$rows = array();
-			//$Sql = 'CALL sp_Call_Roles()';
-			$Sql = 'SELECT Role_ID, Role From roles;';
+			$Sql = 'CALL sp_Call_Roles()';
+			//$Sql = 'SELECT Role_ID, Role From roles;';
 			$stmt = $this->con->prepare($Sql);
 			$stmt->execute();
 			$result = $stmt->get_result();		
@@ -52,8 +52,8 @@
 		public function getTracks()
 		{
 			$rows = array();
-			//$Sql = 'CALL sp_call_tracks()';
-			$Sql = 'SELECT track_ID, track, start_date, end_date From tracks;';			
+			$Sql = 'CALL sp_call_tracks()';
+			//$Sql = 'SELECT track_ID, track, start_date, end_date From tracks;';			
 			$stmt = $this->con->prepare($Sql);
 			$stmt->execute();
 			$result = $stmt->get_result();		
@@ -84,33 +84,31 @@
 				array_push($rows,$row_array);
 			}			
 			return $rows;			
-		}
+		}	
 		
-		public function getInterns()
+		public function insert_update_personnel($personnelID, $department_ID, $role_ID, $track_ID, $firstname, $lastname, $personal_Email, $purdueglobal_Email, $pgiptech_Email)
 		{
-			$rows = array();
-			//$Sql = 'CALL sp_Personnel()';
-			$Sql = "SELECT * From vw_personnel";
-			$stmt = $this->con->prepare($Sql);
-			$stmt->execute();
-			$result = $stmt->get_result();		
-			
-			while ($row = $result->fetch_assoc())
-			{
-				$row_array["ID"] = $row["ID"];
-				$row_array["firstname"] = $row["firstname"];
-				$row_array["lastname"] = $row["lastname"];
-				$row_array["department_name"] = $row["department_name"];
-				$row_array["role"] = $row["role"];
-				$row_array["personal_Email"] = $row["personal_Email"];
-				$row_array["PurdueGlobal_Email"] = $row["PurdueGlobal_Email"];
-				$row_array["PGIPTech_Email"] = $row["PGIPTech_Email"];
-				$row_array["Track"] = $row["Track"];
-				$row_array["start_date"] = $row["start_date"];
-				$row_array["end_date"] = $row["end_date"];
-				array_push($rows,$row_array);
-			}			
-			return $rows;			
+			$Sql = 'CALL sp_Insert_Update_Personnel(?,?,?,?,?,?,?,?,?)';
+			$stmt = $this->con->prepare($Sql);		
+			$stmt->bind_param("issiiisss",$personnelID, $firstname, $lastname, $role_ID, $department_ID, $track_ID, $personal_Email, $purdueglobal_Email, $pgiptech_Email);
+			if($stmt->execute()){
+					return 1; 
+				}else{
+					return 2; 
+				}
+		}
+
+
+		public function update_personnel_status($personnelID, $active)
+		{
+			$Sql = 'CALL sp_Update_PersonnelStatus(?,?)';
+			$stmt = $this->con->prepare($Sql);		
+			$stmt->bind_param("ii",$personnelID, $active);
+			if($stmt->execute()){
+					return 1; 
+				}else{
+					return 2; 
+				}
 		}
 		
 		

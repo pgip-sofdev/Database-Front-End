@@ -109,6 +109,23 @@
 		}
 		return $endtrack;
 	}
+
+	function InsertUpdatePersonnel($personnelID, $department_ID, $role_ID, $track_ID, $firstname, $lastname, $personal_Email, $purdueglobal_Email, $pgiptech_Email)
+	{
+
+		$SP = new StoredProcedures();
+		$result = $SP->insert_update_personnel($personnelID, $department_ID, $role_ID, $track_ID, $firstname, $lastname, $personal_Email, $purdueglobal_Email, $pgiptech_Email);
+
+		return $result;
+	}
+
+	function changeStatus($personnelID, $Active){
+		$SP = new StoredProcedures();
+		$result = $SP->update_personnel_status($personnelID, $Active);
+		return $result;
+	}
+
+
 	
 
     if (isset($_POST['getStartDate'])) {
@@ -119,7 +136,25 @@
         echo TrackEnd($_POST['getEndDate']);
     }
 
+	if (isset($_POST['InsertUpdate']))
+	{
+		echo InsertUpdatePersonnel(
+			$_POST['personnelID'],
+			$_POST['department'],
+			$_POST['role'],
+			$_POST['track'],
+			$_POST['firstname'],
+			$_POST['lastname'],
+			$_POST['personalEmail'],
+			$_POST['purdueglobalEmail'],
+			$_POST['pgiptechEmail']
+		);
+	}
 
+	if(isset($_POST["StatusChange"]))
+	{    	
+    	echo changeStatus($_POST["PersonnelID"], $_POST["Active"]);
+	}
 
 
 
